@@ -1,8 +1,0 @@
-2024/08/09 12:46:01 Starting application
-2024/08/09 12:46:01 Initializing model
-2024/08/09 12:46:01 Starting process: mail
-2024/08/09 12:46:01 Starting process: frontend
-2024/08/09 12:46:01 Process started: mail
-2024/08/09 12:46:01 Process started: frontend
-2024/08/09 12:46:01 Process mail output: 'Mailhog starting' && sleep 3 && echo 'Mailhog ready'
-2024/08/09 12:46:01 Process frontend output: 'Frontend starting' && sleep 2 && echo 'Frontend ready'

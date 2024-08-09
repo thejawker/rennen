@@ -1,0 +1,29 @@
+{
+  "processes": [
+    {
+      "shortname": "frontend",
+      "command": "echo 'Frontend starting' && sleep 2 && echo 'Frontend ready'",
+      "description": "Start the frontend server"
+    },
+    {
+      "shortname": "mail",
+      "command": "echo 'Mailhog starting' && sleep 3 && echo 'Mailhog ready'",
+      "description": "Start the mailhog server"
+    },
+    {
+      "shortname": "stripe",
+      "command": "echo 'Stripe webhook listener starting' && sleep 4 && echo 'Stripe webhook listener ready'",
+      "description": "Start the stripe webhook listener"
+    },
+    {
+      "shortname": "queue",
+      "command": "echo 'Queue worker starting' && sleep 2 && echo 'Queue worker ready'",
+      "description": "Start the queue worker"
+    },
+    {
+      "shortname": "schedule",
+      "command": "echo 'Scheduler starting' && sleep 1 && echo 'Scheduler ready'",
+      "description": "Start the scheduler"
+    }
+  ]
+}

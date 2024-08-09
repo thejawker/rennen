@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -15,9 +16,9 @@ import (
 )
 
 type process struct {
-	shortname    string
-	command      string
-	description  string
+	Shortname    string `json:"shortname"`
+	Command      string `json:"command"`
+	Description  string `json:"description"`
 	output       string
 	cmd          *exec.Cmd
 	lastActivity time.Time
@@ -36,6 +37,10 @@ type model struct {
 	mutex      sync.Mutex
 }
 
+type config struct {
+	Processes []process `json:"processes"`
+}
+
 func (m model) Init() tea.Cmd {
 	log.Println("Initializing model")
 	return tea.Batch(m.startAllProcesses()...)
@@ -49,18 +54,20 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "right", "l", "n", "tab":
 			m.activeTab = min(m.activeTab+1, len(m.Tabs)-1)
+			m.clearNotification(m.activeTab)
 			return m, nil
 		case "left", "h", "p", "shift+tab":
 			m.activeTab = max(m.activeTab-1, 0)
+			m.clearNotification(m.activeTab)
 			return m, nil
 		}
 
 	case processStartedMsg:
-		log.Printf("Process started: %s\n", msg.process.shortname)
+		log.Printf("Process started: %s\n", msg.process.Shortname)
 		return m, m.updateNotifications()
 
 	case processErrorMsg:
-		log.Printf("Error starting process %s: %v\n", msg.process.shortname, msg.err)
+		log.Printf("Error starting process %s: %v\n", msg.process.Shortname, msg.err)
 		return m, nil
 
 	case tea.WindowSizeMsg:
@@ -122,8 +129,8 @@ func (m *model) View() string {
 
 func (m *model) startProcess(p *process) tea.Cmd {
 	return func() tea.Msg {
-		log.Printf("Starting process: %s\n", p.shortname)
-		args := strings.Fields(p.command)
+		log.Printf("Starting process: %s\n", p.Shortname)
+		args := strings.Fields(p.Command)
 		cmd := exec.Command(args[0], args[1:]...)
 		p.cmd = cmd
 
@@ -162,11 +169,11 @@ func (m *model) handleOutput(p *process, reader io.Reader) {
 		m.mutex.Lock()
 		p.output += line + "\n"
 		p.lastActivity = time.Now()
-		log.Printf("Process %s output: %s\n", p.shortname, line)
+		log.Printf("Process %s output: %s\n", p.Shortname, line)
 		m.mutex.Unlock()
 	}
 	if err := scanner.Err(); err != nil {
-		log.Printf("Error reading output from process %s: %v\n", p.shortname, err)
+		log.Printf("Error reading output from process %s: %v\n", p.Shortname, err)
 	}
 }
 
@@ -179,13 +186,19 @@ func (m *model) updateNotifications() tea.Cmd {
 				continue // Skip the "all" tab
 			}
 			for _, p := range m.processes {
-				if p.shortname == t.name {
+				if p.Shortname == t.name {
 					m.Tabs[i].notifications = time.Since(p.lastActivity) < time.Minute
 					break
 				}
 			}
 		}
 		return nil
+	}
+}
+
+func (m *model) clearNotification(tabIndex int) {
+	if tabIndex > 0 && tabIndex < len(m.Tabs) {
+		m.Tabs[tabIndex].notifications = false
 	}
 }
 
@@ -210,20 +223,16 @@ func main() {
 
 	log.Println("Starting application")
 
-	processes := []*process{
-		{
-			shortname:   "frontend",
-			command:     "echo 'Frontend starting' && sleep 2 && echo 'Frontend ready'",
-			description: "Start the frontend server",
-			output:      "",
-		},
-		{
-			shortname:   "mail",
-			command:     "echo 'Mailhog starting' && sleep 3 && echo 'Mailhog ready'",
-			description: "Start the mailhog server",
-			output:      "",
-		},
-		// ... other processes ...
+	cfg, err := loadConfig("ren.json")
+	if err != nil {
+		log.Printf("Error loading config: %v\n", err)
+		fmt.Printf("Error loading config: %v\n", err)
+		return
+	}
+
+	processes := make([]*process, len(cfg.Processes))
+	for i := range cfg.Processes {
+		processes[i] = &cfg.Processes[i]
 	}
 
 	tabs := generateTabs(processes)
@@ -258,12 +267,25 @@ func (m model) getActiveTab() tab {
 func (m model) getActiveProcess() *process {
 	// find by name
 	for _, p := range m.processes {
-		if p.shortname == m.getActiveTab().name {
+		if p.Shortname == m.getActiveTab().name {
 			return p
 		}
 	}
 
 	return nil
+}
+
+func loadConfig(filename string) (config, error) {
+	var cfg config
+	file, err := os.Open(filename)
+	if err != nil {
+		return cfg, err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&cfg)
+	return cfg, err
 }
 
 func generateTabs(processes []*process) []tab {
