@@ -2,28 +2,28 @@
   "processes": [
     {
       "shortname": "frontend",
-      "command": "echo 'Frontend starting' && sleep 2 && echo 'Frontend ready'",
-      "description": "Start the frontend server"
+      "command": "bash ./test.sh",
+      "description": "Simulated frontend server"
     },
     {
       "shortname": "mail",
-      "command": "echo 'Mailhog starting' && sleep 3 && echo 'Mailhog ready'",
-      "description": "Start the mailhog server"
+      "command": "bash ./test.sh",
+      "description": "Simulated mailhog server"
     },
     {
       "shortname": "stripe",
-      "command": "echo 'Stripe webhook listener starting' && sleep 4 && echo 'Stripe webhook listener ready'",
-      "description": "Start the stripe webhook listener"
+      "command": "bash ./test.sh",
+      "description": "Simulated stripe webhook listener"
     },
     {
       "shortname": "queue",
-      "command": "echo 'Queue worker starting' && sleep 2 && echo 'Queue worker ready'",
-      "description": "Start the queue worker"
+      "command": "bash ./test.sh",
+      "description": "Simulated queue worker"
     },
     {
       "shortname": "schedule",
-      "command": "echo 'Scheduler starting' && sleep 1 && echo 'Scheduler ready'",
-      "description": "Start the scheduler"
+      "command": "bash ./test.sh",
+      "description": "Simulated scheduler"
     }
   ]
 }

@@ -35,6 +35,7 @@ type model struct {
 	windowSize []int
 	processes  []*process
 	mutex      sync.Mutex
+	program    *tea.Program
 }
 
 type config struct {
@@ -44,6 +45,10 @@ type config struct {
 func (m model) Init() tea.Cmd {
 	log.Println("Initializing model")
 	return tea.Batch(m.startAllProcesses()...)
+}
+
+type outputMsg struct {
+	process *process
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -73,6 +78,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.windowSize = []int{msg.Width, msg.Height}
 		return m, nil
+
+	case outputMsg:
+		return m, m.updateNotifications()
 	}
 
 	return m, nil
@@ -112,8 +120,8 @@ func (m *model) View() string {
 			Foreground(lipgloss.AdaptiveColor{Light: "#606060", Dark: "#e0e0e0"})
 
 		// Construct the window content with command, description, and output
-		header := commandStyle.Render(fmt.Sprintf("$ %s", process.command)) + "\n"
-		header += descriptionStyle.Render(fmt.Sprintf("%s", process.description)) + "\n"
+		header := commandStyle.Render(fmt.Sprintf("$ %s", process.Command)) + "\n"
+		header += descriptionStyle.Render(fmt.Sprintf("%s", process.Description)) + "\n"
 		divider := dividerStyle.Render(strings.Repeat("─", m.windowSize[0]-WindowStyle.GetHorizontalFrameSize()-2))
 		windowContent := header + divider + "\n" + outputStyle.Render(process.output)
 
@@ -171,6 +179,9 @@ func (m *model) handleOutput(p *process, reader io.Reader) {
 		p.lastActivity = time.Now()
 		log.Printf("Process %s output: %s\n", p.Shortname, line)
 		m.mutex.Unlock()
+
+		// Send a message to trigger UI update
+		m.program.Send(outputMsg{process: p})
 	}
 	if err := scanner.Err(); err != nil {
 		log.Printf("Error reading output from process %s: %v\n", p.Shortname, err)
@@ -245,11 +256,17 @@ func main() {
 	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
+	m.program = p // Store program reference in model
 
 	go func() {
-		ticker := time.NewTicker(10 * time.Second)
+		ticker := time.NewTicker(1 * time.Second)
 		for range ticker.C {
-			p.Send(m.updateNotifications()())
+			// duration .2s
+			duration := 200 * time.Millisecond
+
+			p.Send(tea.Tick(duration, func(t time.Time) tea.Msg {
+				return outputMsg{}
+			}))
 		}
 	}()
 
@@ -298,7 +315,7 @@ func generateTabs(processes []*process) []tab {
 
 	for _, p := range processes {
 		tabs = append(tabs, tab{
-			name:          p.shortname,
+			name:          p.Shortname,
 			notifications: false,
 		})
 	}
