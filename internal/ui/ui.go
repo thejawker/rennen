@@ -16,7 +16,7 @@ var (
 	highlightColor    = lipgloss.AdaptiveColor{Light: "#3f3f46", Dark: "#475569"}
 	inactiveTabStyle  = lipgloss.NewStyle().Border(inactiveTabBorder, true).BorderForeground(highlightColor).Padding(0, 1)
 	activeTabStyle    = inactiveTabStyle.Border(activeTabBorder, true)
-	windowStyle       = lipgloss.NewStyle().BorderForeground(highlightColor).Padding(0, 1, 0, 1).Align(lipgloss.Top, lipgloss.Left).Border(lipgloss.NormalBorder()).UnsetBorderTop()
+	windowStyle       = lipgloss.NewStyle().BorderForeground(highlightColor).Padding(0, 1, 0, 1).Align(lipgloss.Top, lipgloss.Left).Border(lipgloss.RoundedBorder()).UnsetBorderTop()
 )
 
 func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
@@ -35,7 +35,7 @@ func RenderView(m types.ViewModelProvider) string {
 	doc.WriteString("\n")
 
 	// window style
-	windowWidth := m.GetViewModel().WindowSize.Width - windowStyle.GetHorizontalFrameSize()
+	windowWidth := m.GetViewModel().WindowSize.Width - windowStyle.GetHorizontalFrameSize() + 2
 	windowHeight := m.GetViewModel().WindowSize.Height - activeTabStyle.GetVerticalFrameSize() - 2
 
 	// Render content
