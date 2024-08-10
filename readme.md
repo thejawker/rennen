@@ -82,4 +82,7 @@ make logs
 ## contributing
 well, you really don't have to
 
-hope you enjoy less pain in your life now you can ren! if you have any questions or run into any issues, please know that i might never respond.
+hope you enjoy less pain in your life now you can ren! 
+
+
+if you have any questions or run into any issues, please know that i might never respond.
