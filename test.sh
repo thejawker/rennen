@@ -25,4 +25,6 @@ generate_random_log() {
 while true; do
     generate_random_log
     sleep $(awk 'BEGIN{print 0.1 + (2 - 0.1) * rand()}')
+# faster
+#    sleep $(awk 'BEGIN{print 0.1 + (0.1 - 0.1) * rand()}')
 done

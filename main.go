@@ -57,11 +57,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-		case "right", "l", "n", "tab":
+		case "right", "tab":
 			m.activeTab = min(m.activeTab+1, len(m.Tabs)-1)
 			m.clearNotification(m.activeTab)
 			return m, nil
-		case "left", "h", "p", "shift+tab":
+		case "left", "shift+tab":
 			m.activeTab = max(m.activeTab-1, 0)
 			m.clearNotification(m.activeTab)
 			return m, nil
@@ -224,13 +224,6 @@ type processErrorMsg struct {
 
 func main() {
 	// Set up logging to a file
-	logFile, err := os.Create("debug.log")
-	if err != nil {
-		fmt.Printf("Error creating log file: %v\n", err)
-		return
-	}
-	defer logFile.Close()
-	log.SetOutput(logFile)
 
 	log.Println("Starting application")
 
