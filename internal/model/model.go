@@ -59,26 +59,20 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ScrollOutput(1)
 		case "x":
 			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
-				proc := m.Processes[m.ActiveTab-1]
-				return m, func() tea.Msg {
-					if err := proc.Stop(); err != nil {
-						log.Printf("Error stopping process %s: %v\n", proc.Shortname, err)
-					}
-					tab := m.GetTabForProcess(proc)
-					if tab != nil {
-						tab.Name = proc.Shortname + "(stopped)"
-						tab.Notification = false
-					}
-					return ProcessUpdateMsg{}
-				}
+				return m, m.closeProcess(m.GetActiveProcess())
 			}
 		case "c":
 			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
-				proc := m.Processes[m.ActiveTab-1]
+				proc := m.GetActiveProcess()
 				return m, func() tea.Msg {
 					proc.ClearOutput()
 					return ProcessUpdateMsg{}
 				}
+			}
+		case "r":
+			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
+				proc := m.GetActiveProcess()
+				return m, m.restartProcess(proc)
 			}
 		}
 	case tea.WindowSizeMsg:
@@ -94,6 +88,26 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+func (m *Model) restartProcess(proc *process.Process) tea.Cmd {
+	m.closeProcess(proc)
+	m.startProcess(proc)
+	return tea.Batch(m.closeProcess(proc), m.startProcess(proc))
+}
+
+func (m *Model) closeProcess(proc *process.Process) tea.Cmd {
+	return func() tea.Msg {
+		if err := proc.Stop(); err != nil {
+			log.Printf("Error stopping process %s: %v\n", proc.Shortname, err)
+		}
+		tab := m.GetTabForProcess(proc)
+		if tab != nil {
+			tab.Name = proc.Shortname + "(stopped)"
+			tab.Notification = false
+		}
+		return ProcessUpdateMsg{}
+	}
 }
 
 type OutputMsg struct {
@@ -196,15 +210,19 @@ func (m *Model) startAllProcesses() []tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.Processes))
 	for i, p := range m.Processes {
 		i, p := i, p // https://golang.org/doc/faq#closures_and_goroutines
-		cmds[i] = func() tea.Msg {
-			err := p.Start()
-			if err != nil {
-				return ProcessErrorMsg{Process: p, Err: err}
-			}
-			return ProcessStartedMsg{Process: p}
-		}
+		cmds[i] = m.startProcess(p)
 	}
 	return cmds
+}
+
+func (m *Model) startProcess(p *process.Process) func() tea.Msg {
+	return func() tea.Msg {
+		err := p.Start()
+		if err != nil {
+			return ProcessErrorMsg{Process: p, Err: err}
+		}
+		return ProcessStartedMsg{Process: p}
+	}
 }
 
 func (m *Model) GetTabForProcess(proc *process.Process) *types.Tab {

@@ -11,7 +11,7 @@
 - [x] fix tab bar width overflow issue
 
 - [ ] info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
-- [ ] ability to clear the screen (e.g. by pressing 'c')
+- [x] ability to clear the screen (e.g. by pressing 'c')
 - [ ] overview should show
   - [ ] number of tasks
   - [ ] time running
