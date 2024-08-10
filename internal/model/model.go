@@ -46,7 +46,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			return m, tea.Quit
+			return m, m.Shutdown()
 		case "tab", "right", "l":
 			m.ActiveTab = (m.ActiveTab + 1) % len(m.Tabs)
 			m.ClearNotification(m.ActiveTab)
@@ -57,6 +57,21 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ScrollOutput(-1)
 		case "down":
 			m.ScrollOutput(1)
+		case "x":
+			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
+				proc := m.Processes[m.ActiveTab-1]
+				return m, func() tea.Msg {
+					if err := proc.Stop(); err != nil {
+						log.Printf("Error stopping process %s: %v\n", proc.Shortname, err)
+					}
+					tab := m.GetTabForProcess(proc)
+					if tab != nil {
+						tab.Name = proc.Shortname + "(stopped)"
+						tab.Notification = false
+					}
+					return ProcessUpdateMsg{}
+				}
+			}
 		}
 	case tea.WindowSizeMsg:
 		m.WindowSize = msg
@@ -75,6 +90,24 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 type OutputMsg struct {
 	process *process.Process
+}
+
+func (m *Model) Shutdown() tea.Cmd {
+	return func() tea.Msg {
+		var wg sync.WaitGroup
+		for _, p := range m.Processes {
+			wg.Add(1)
+			go func(proc *process.Process) {
+				defer wg.Done()
+				if err := proc.Stop(); err != nil {
+					log.Printf("Error stopping process %s: %v\n", proc.Shortname, err)
+				}
+			}(p)
+		}
+		wg.Wait()
+
+		return tea.Quit()
+	}
 }
 
 func (m *Model) ClearNotification(tabIndex int) {
@@ -164,6 +197,15 @@ func (m *Model) startAllProcesses() []tea.Cmd {
 		}
 	}
 	return cmds
+}
+
+func (m *Model) GetTabForProcess(proc *process.Process) *types.Tab {
+	for i, t := range m.Tabs {
+		if t.Name == proc.Shortname {
+			return &m.Tabs[i]
+		}
+	}
+	return nil
 }
 
 type ProcessStartedMsg struct {

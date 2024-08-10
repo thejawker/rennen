@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"github.com/thejawker/rennen/internal/utils"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -99,14 +100,17 @@ func renderTabs(vm types.Model) string {
 			}
 		}
 
-		style = style.Border(border)
+		style = style.
+			Border(border)
 
 		tabName := t.Name
 		if t.Notification {
 			tabName = "● " + tabName
 		}
 
-		renderedTabs = append(renderedTabs, style.Render(tabName))
+		truncatedName := utils.SmartTruncate(tabName, widthAdjustment-2, "")
+
+		renderedTabs = append(renderedTabs, style.Render(truncatedName))
 	}
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, renderedTabs...)

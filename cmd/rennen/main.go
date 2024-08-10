@@ -76,6 +76,8 @@ func main() {
 	if _, err := p.Run(); err != nil {
 		log.Fatalf("Error running program: %v", err)
 	}
+
+	fmt.Println("\nthat was cool i guess, all is stopped now though")
 }
 
 func loadConfig(configPath string) (*config.Config, error) {

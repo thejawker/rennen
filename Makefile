@@ -6,7 +6,7 @@ MAIN_FILE=cmd/rennen/main.go
 
 # Default command is start
 .PHONY: start
-start: stop run watch
+start: run
 
 # Run the Go server
 .PHONY: run
