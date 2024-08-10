@@ -161,3 +161,9 @@ func (p *Process) Stop() error {
 
 	return nil
 }
+
+func (p *Process) ClearOutput() {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	p.Output = ""
+}

@@ -5,7 +5,7 @@
 > *very* least:
 
 ## most important
-- [ ] ability to restart an individual task
+- [ ] ability to restart an individual task (e.g. by pressing 'r')
 - [x] ability to gracefully exit the program (e.g. by pressing 'q')
 - [x] ability to gracefully stop one task (e.g. by pressing 'x')
 - [x] fix tab bar width overflow issue

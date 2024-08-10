@@ -72,6 +72,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return ProcessUpdateMsg{}
 				}
 			}
+		case "c":
+			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
+				proc := m.Processes[m.ActiveTab-1]
+				return m, func() tea.Msg {
+					proc.ClearOutput()
+					return ProcessUpdateMsg{}
+				}
+			}
 		}
 	case tea.WindowSizeMsg:
 		m.WindowSize = msg
