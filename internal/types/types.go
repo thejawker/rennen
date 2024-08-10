@@ -18,6 +18,7 @@ type Model struct {
 type Tab struct {
 	Name         string
 	Notification bool
+	Status       string
 }
 
 type ViewModelProvider interface {

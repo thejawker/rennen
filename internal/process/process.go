@@ -1,11 +1,13 @@
 package process
 
 import (
-	"bufio"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -39,6 +41,21 @@ func InitializeFromConfig(configs []config.ProcessConfig) ([]*Process, error) {
 	return processes, nil
 }
 
+func (p *Process) Restart() error {
+	if err := p.Stop(); err != nil {
+		return fmt.Errorf("failed to stop process: %w", err)
+	}
+
+	p.stopped = false
+	p.Output = "restarted process...\n"
+
+	if err := p.Start(); err != nil {
+		return fmt.Errorf("failed to start process: %w", err)
+	}
+
+	return nil
+}
+
 // Start begins the execution of the process
 func (p *Process) Start() error {
 	p.mutex.Lock()
@@ -54,9 +71,13 @@ func (p *Process) Start() error {
 
 	if runtime.GOOS == "windows" {
 		cmd = exec.Command("cmd", "/C", p.Command)
+	} else if shell := os.Getenv("SHELL"); strings.Contains(shell, "zsh") {
+		cmd = exec.Command("zsh", "-c", p.Command)
 	} else {
 		cmd = exec.Command("sh", "-c", p.Command)
 	}
+
+	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
 
 	p.Cmd = cmd
 
@@ -81,19 +102,24 @@ func (p *Process) Start() error {
 
 // handleOutput reads the process output and updates the Process struct
 func (p *Process) handleOutput(reader io.Reader) {
-	scanner := bufio.NewScanner(reader)
+	buffer := make([]byte, 1024)
 	for {
 		select {
 		case <-p.done:
 			return
 		default:
-			if scanner.Scan() {
-				line := scanner.Text()
+			n, err := reader.Read(buffer)
+			if n > 0 {
 				p.mutex.Lock()
-				p.Output += line + "\n"
+				p.Output += string(buffer[:n])
 				p.LastActivity = time.Now()
 				p.mutex.Unlock()
-			} else {
+			}
+			if err != nil {
+				if err == io.EOF {
+					return
+				}
+				log.Printf("error reading process output: %v", err)
 				return
 			}
 		}

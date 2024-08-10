@@ -108,6 +108,10 @@ func renderTabs(vm types.Model) string {
 			tabName = "● " + tabName
 		}
 
+		if t.Status != "" {
+			tabName = tabName + "(" + t.Status + ")"
+		}
+
 		truncatedName := utils.SmartTruncate(tabName, widthAdjustment-2, "")
 
 		renderedTabs = append(renderedTabs, style.Render(truncatedName))
@@ -121,6 +125,8 @@ func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
 	if process == nil {
 		return fmt.Sprintf("Viewing tab: %s", m.GetActiveTabName()), true
 	}
+
+	windowWidth := m.GetViewModel().WindowSize.Width - windowStyle.GetHorizontalFrameSize() - 2
 
 	// Define adaptive styles for header and output
 	commandStyle := lipgloss.
@@ -138,12 +144,17 @@ func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
 	outputStyle := lipgloss.
 		NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#606060", Dark: "#e0e0e0"})
+	hintStyle := lipgloss.
+		NewStyle().
+		Width(windowWidth).
+		// pretty muted
+		Foreground(lipgloss.AdaptiveColor{Light: "#a7a7a7", Dark: "#8a8a8a"}).
+		Align(lipgloss.Bottom, lipgloss.Right)
 
 	// Construct the window content with command, description, and output
 	header := commandStyle.Render(fmt.Sprintf("$ %s", process.Command)) + "\n"
 	header += descriptionStyle.Render(fmt.Sprintf("%s", process.Description)) + "\n"
 
-	windowWidth := m.GetViewModel().WindowSize.Width - windowStyle.GetHorizontalFrameSize() - 2
 	divider := dividerStyle.Render(strings.Repeat("─", windowWidth))
 	output := process.GetOutput()
 
@@ -154,15 +165,18 @@ func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
 	// Calculate available height for viewport
 	headerHeight := lipgloss.Height(header)
 	dividerHeight := lipgloss.Height(divider)
-	viewportHeight := maxLines - headerHeight - dividerHeight
+	viewportHeight := maxLines - headerHeight - dividerHeight - 1
 
 	// Create a viewport for scrollable content
 	vp := viewport.New(windowWidth, viewportHeight)
 	vp.SetContent(outputStyle.Render(output))
 	vp.GotoBottom()
 
+	// Render hint, left right tab,
+	hint := hintStyle.Render("←/→ tabs, (q)uit all, (c)lear, (x) close, (r)eload")
+
 	// Combine all elements
-	content := fmt.Sprintf("%s\n%s\n%s", header, divider, vp.View())
+	content := fmt.Sprintf("%s\n%s\n%s\n%s", header, divider, vp.View(), hint)
 
 	return content, false
 }

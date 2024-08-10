@@ -5,13 +5,16 @@
 > *very* least:
 
 ## most important
-- [ ] ability to restart an individual task (e.g. by pressing 'r')
+- [ ]  clear notification bell right away when viewing it
+- [x] ability to restart an individual task (e.g. by pressing 'r')
 - [x] ability to gracefully exit the program (e.g. by pressing 'q')
 - [x] ability to gracefully stop one task (e.g. by pressing 'x')
 - [x] fix tab bar width overflow issue
 
+## meh dont really care
+- [ ] enable ansi colors from the processes
+- [ ] enable 
 - [ ] info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
-- [x] ability to clear the screen (e.g. by pressing 'c')
 - [ ] overview should show
   - [ ] number of tasks
   - [ ] time running
@@ -19,4 +22,5 @@
 - [ ] disable logging by default
 - [ ] scrollable content
 - [ ] search
-- [ ] enable colors from the processes
+- [ ] add the ability to add one offs to the overview, to like open browser db etc
+- [x] ability to clear the screen (e.g. by pressing 'c')

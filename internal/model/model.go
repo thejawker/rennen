@@ -91,9 +91,17 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) restartProcess(proc *process.Process) tea.Cmd {
-	m.closeProcess(proc)
-	m.startProcess(proc)
-	return tea.Batch(m.closeProcess(proc), m.startProcess(proc))
+	return func() tea.Msg {
+		if err := proc.Restart(); err != nil {
+			log.Printf("Error restarting process %s: %v\n", proc.Shortname, err)
+		}
+
+		tab := m.GetTabForProcess(proc)
+		if tab != nil {
+			tab.Status = ""
+		}
+		return ProcessUpdateMsg{}
+	}
 }
 
 func (m *Model) closeProcess(proc *process.Process) tea.Cmd {
@@ -103,7 +111,7 @@ func (m *Model) closeProcess(proc *process.Process) tea.Cmd {
 		}
 		tab := m.GetTabForProcess(proc)
 		if tab != nil {
-			tab.Name = proc.Shortname + "(stopped)"
+			tab.Status = "stopped"
 			tab.Notification = false
 		}
 		return ProcessUpdateMsg{}

@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	version = "0.0.2" // This should be updated with each release
+	version = "0.0.3" // This should be updated with each release
 )
 
 func main() {
