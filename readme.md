@@ -79,6 +79,9 @@ since the only thing visible is the output of the commands, you can open a new t
 make logs
 ```
 
+## roadmap
+read these things that i should do but probably won't [here](todo.md)
+
 ## contributing
 well, you really don't have to
 
