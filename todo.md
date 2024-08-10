@@ -1,7 +1,7 @@
 # dos that you must do, ok?
-> in order for this to be a proper v1 release, the following must be done, at the 
-> very very _very_ 
-> _v e r y_ 
+> in order for this to be a proper v1 release, the following must be done, at the   
+> very very _very_    
+> _v e r y_   
 > *very* least:
 
 - [ ] ability to restart an individual task
