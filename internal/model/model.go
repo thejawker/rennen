@@ -79,8 +79,25 @@ type OutputMsg struct {
 
 func (m *Model) ClearNotification(tabIndex int) {
 	if tabIndex > 0 && tabIndex < len(m.Tabs) {
-		m.Tabs[tabIndex].Notification = false
+		tab := m.Tabs[tabIndex]
+		tab.Notification = false
+		proc := m.GetProcessForTab(tab)
+
+		if proc != nil {
+			// Reset the last activity time
+			proc.LastActivity = time.Now().Add(-time.Minute * 2)
+		}
 	}
+}
+
+func (m *Model) GetProcessForTab(tab types.Tab) *process.Process {
+	for _, p := range m.Processes {
+		if p.Shortname == tab.Name {
+			return p
+		}
+	}
+	return nil
+
 }
 
 // updateNotifications checks the last activity time of each process and sets

@@ -2,8 +2,8 @@
   "processes": [
     {
       "shortname": "frontend",
-      "command": "bash ./test.sh",
-      "description": "Simulated frontend server"
+      "description": "echos and then runs the test.sh script",
+      "command": "echo 'frontend' && bash ./test.sh"
     },
     {
       "shortname": "mail",

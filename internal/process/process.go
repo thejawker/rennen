@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
-	"strings"
+	"runtime"
 	"sync"
 	"time"
 
@@ -38,8 +38,15 @@ func InitializeFromConfig(configs []config.ProcessConfig) ([]*Process, error) {
 
 // Start begins the execution of the process
 func (p *Process) Start() error {
-	args := strings.Fields(p.Command)
-	p.Cmd = exec.Command(args[0], args[1:]...)
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/C", p.Command)
+	} else {
+		cmd = exec.Command("sh", "-c", p.Command)
+	}
+
+	p.Cmd = cmd
 
 	stdout, err := p.Cmd.StdoutPipe()
 	if err != nil {
