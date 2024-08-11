@@ -23,7 +23,7 @@ type Model struct {
 
 func New(processes []*process.Process) *Model {
 	tabs := make([]types.Tab, len(processes)+1)
-	tabs[0] = types.Tab{Name: "Overview", Notification: false}
+	tabs[0] = types.Tab{Name: "overview", Notification: false}
 	for i, p := range processes {
 		tabs[i+1] = types.Tab{Name: p.Shortname, Notification: false}
 	}

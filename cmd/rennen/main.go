@@ -56,7 +56,9 @@ func main() {
 	// Load configuration
 	cfg, err := loadConfig(*configPath)
 	if err != nil {
+		fmt.Printf("oops, pls make sure you have a config file at.\nif not just run `ren init` to generate one\n")
 		log.Fatalf("Error loading configuration: %v", err)
+		return
 	}
 
 	// Initialize processes

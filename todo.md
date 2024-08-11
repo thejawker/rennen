@@ -14,8 +14,8 @@
 - [ ] add a predefined set of commands you can easily kick off from the overview page
 
 ## onboarding --- on_boooooring_ jk jk
-- [ ] add an init command that creates a `ren.json` file
-- [ ] suggest init if no ren.json
+- [x] add an init command that creates a `ren.json` file
+- [x] suggest init if no ren.json
 
 ## meh dont really care
 - [ ] load stuff from the package.json ????? not sure tho

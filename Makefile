@@ -74,6 +74,11 @@ build:
 unbrew:
 	@brew uninstall thejawker/tappen/rennen
 
+# brew will pull the bin from homebrew
+.PHONY: brew
+brew:
+	@brew install thejawker/tappen/rennen
+
 # Show server logs
 .PHONY: logs
 logs:
