@@ -17,11 +17,11 @@ brew install thejawker/tappen/rennen
 once you've downloaded the binary, you can run rennen with the following command `ren`:
 
 ```bash
-ren
+ren init # to create a ren.json file
+ren # to start rennen
 ```
 
 ## configuration
-
 rennen requires a configuration file named `ren.json` in the same directory where the binary is run. this file should contain a `processes` array where each object represents a process that rennen should manage. each process object should have a `shortname`, `command`, and `description`.
 
 here's an example of what the `ren.json` file could look like:
@@ -39,7 +39,7 @@ here's an example of what the `ren.json` file could look like:
       "command": "php artisan serve",
       "description": "starts the laravel server"
     }
-    //... add more processes as needed
+    //... add so many more processes
   ]
 }
 ```
