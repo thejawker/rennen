@@ -27,9 +27,26 @@ dist-fake:
 
 .PHONY: dist
 dist:
-	@echo "Releasing the binary..."
-# export the env GITHUB_TOKEN first before realeasing
-	@goreleaser release --clean
+	@current_version=$$(cat VERSION); \
+	echo "Current version: $$current_version"; \
+	IFS='.' read -r major minor patch <<< "$${current_version#v}"; \
+	read -p "Is this a patch, minor, or major release? " level; \
+	case $$level in \
+		patch) patch=$$(($$patch + 1));; \
+		minor) minor=$$(($$minor + 1)); patch=0;; \
+		major) major=$$(($$major + 1)); minor=0; patch=0;; \
+		*) echo "Invalid level, use patch/minor/major"; exit 1;; \
+	esac; \
+	new_version="v$$major.$$minor.$$patch"; \
+	echo "$$new_version" > VERSION; \
+	echo "Updated VERSION file to $$new_version"; \
+	git add VERSION; \
+	git commit -m "Bump version to $$new_version"; \
+	read -p "Enter the tag message: " tag_message; \
+	git tag -a $$new_version -m "$$tag_message"; \
+	git push --follow-tags; \
+	echo "Releasing the binary..."; \
+	goreleaser release --clean
 
 # Build the Go binary
 .PHONY: build
