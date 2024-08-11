@@ -18,7 +18,7 @@ before:
 builds:
   - main: ./cmd/rennen/main.go
     binary: ren
-  - env:
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -46,3 +46,14 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: rennen
+    homepage: https://github.com/thejawker/rennen
+    description: a tool that can run multiple processes in parallel
+    commit_author:
+      name: "thejawker"
+      email: "info@thejawker.com"
+    repository:
+      owner: thejawker
+      name: tapping
