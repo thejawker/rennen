@@ -20,7 +20,7 @@
   - [ ] time running
   - [ ] processes associated with tasks
   - [ ] info line
-- [ ] disable logging by default
+- [x] disable logging by default
 - [ ] scrollable content
 - [ ] search
 - [ ] add the ability to add one offs to the overview, to like open browser db etc

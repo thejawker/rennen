@@ -12,14 +12,13 @@ import (
 )
 
 var (
-	version = "0.0.3" // This should be updated with each release
+	version = "0.0.4"
 )
 
 func main() {
-	// Parse command-line flags
-	configPath := flag.String("config", "", "path to config file (default: ./ren.json)")
+	configPath := flag.String("config", "./ren.json", "path to config file")
 	showVersion := flag.Bool("version", false, "show version information")
-	verbose := flag.Bool("verbose", false, "enable verbose logging")
+	verbosityLevel := flag.String("logging", "none", "logs to ./ren.log verbosity level: none, all")
 	flag.Parse()
 
 	// Show version and exit if requested
@@ -29,18 +28,14 @@ func main() {
 	}
 
 	// Setup logging
-	closeLogger := logging.SetupLogging()
+	closeLogger := logging.SetupLogging(verbosityLevel)
 
-	// defer and handle the error
+	// Defer and handle the error
 	defer func() {
 		if err := closeLogger(); err != nil {
 			fmt.Printf("error closing log file: %w", err)
 		}
 	}()
-
-	if *verbose {
-		log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	}
 
 	// Load configuration
 	cfg, err := loadConfig(*configPath)
@@ -60,24 +55,11 @@ func main() {
 	// Create and start the Bubble Tea program
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
-	//go func() {
-	//	ticker := time.NewTicker(1 * time.Second)
-	//	for range ticker.C {
-	//		// duration .2s
-	//		duration := 200 * time.Millisecond
-	//
-	//		p.Send(tea.Tick(duration, func(t time.Time) tea.Msg {
-	//			print("tick")
-	//			return model.OutputMsg{}
-	//		}))
-	//	}
-	//}()
-
 	if _, err := p.Run(); err != nil {
 		log.Fatalf("Error running program: %v", err)
 	}
 
-	fmt.Println("\nthat was cool i guess, all is stopped now though")
+	fmt.Println("\nwoah that was cool i guess, all is stopped now though")
 }
 
 func loadConfig(configPath string) (*config.Config, error) {

@@ -1,7 +1,7 @@
 # Variables
 BINARY_NAME=ren
 BUILD_DIR=build
-LOG_FILE=ren_debug.log
+LOG_FILE=ren.log
 MAIN_FILE=cmd/rennen/main.go
 
 # Default command is start
@@ -26,30 +26,14 @@ build:
 	@echo "Making the binary executable..."
 	@chmod +x $(path)
 
-# go is just too fucking fast building this
+	@ # go is just too fucking fast building this
 	@sleep 1
 
-# fullpath from root
+	@ # fullpath from root/ i/
 	$(eval currentdir := $(shell pwd))
 	$(eval fullpath := $(currentdir)/$(path))
 
 	@echo "\n✨  Binary located at $(fullpath)"
-
-# Watch for file changes and restart the server using reflex
-.PHONY: watch
-watch:
-	@echo "Watching for changes with reflex..."
-	@reflex -r '\.go$$' -- make restart
-
-# Restart the server
-.PHONY: restart
-restart: stop run
-
-# Stop the server
-.PHONY: stop
-stop:
-	@echo "Stopping the server..."
-	@pkill -f "$(MAIN_FILE)" || true
 
 # Show server logs
 .PHONY: logs
