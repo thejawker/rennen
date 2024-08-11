@@ -49,10 +49,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.Shutdown()
 		case "tab", "right", "l":
 			m.ActiveTab = (m.ActiveTab + 1) % len(m.Tabs)
-			m.ClearNotification(m.ActiveTab)
+			return m.ClearNotification(m.ActiveTab)
 		case "shift+tab", "left", "h":
 			m.ActiveTab = (m.ActiveTab - 1 + len(m.Tabs)) % len(m.Tabs)
-			m.ClearNotification(m.ActiveTab)
+			return m.ClearNotification(m.ActiveTab)
 		case "up":
 			m.ScrollOutput(-1)
 		case "down":
@@ -140,16 +140,23 @@ func (m *Model) Shutdown() tea.Cmd {
 	}
 }
 
-func (m *Model) ClearNotification(tabIndex int) {
+func (m *Model) ClearNotification(tabIndex int) (tea.Model, tea.Cmd) {
+	var tab types.Tab
 	if tabIndex > 0 && tabIndex < len(m.Tabs) {
-		tab := m.Tabs[tabIndex]
+		tab = m.Tabs[tabIndex]
 		tab.Notification = false
-		proc := m.GetProcessForTab(tab)
+	}
 
-		if proc != nil {
-			// Reset the last activity time
-			proc.LastActivity = time.Now().Add(-time.Minute * 2)
-		}
+	proc := m.GetProcessForTab(tab)
+
+	if proc != nil {
+		// Reset the last activity time
+		log.Printf("Clearing notification for %s\n", proc.Shortname)
+		proc.LastActivity = time.Now().Add(-time.Minute * 10)
+	}
+
+	return m, func() tea.Msg {
+		return ProcessUpdateMsg{}
 	}
 }
 
@@ -173,7 +180,12 @@ func (m *Model) updateNotifications() tea.Cmd {
 				continue // Skip the "all" tab
 			}
 			for _, p := range m.Processes {
-				if p.Shortname == t.Name && m.GetActiveTabName() != t.Name {
+				if p.Shortname == t.Name {
+					if m.GetActiveTabName() == t.Name {
+						m.Tabs[i].Notification = false
+						break
+					}
+
 					m.Tabs[i].Notification = time.Since(p.LastActivity) < time.Minute
 					break
 				}
@@ -258,6 +270,6 @@ type ProcessUpdateMsg struct{}
 type tickMsg time.Time
 
 func tick() tea.Msg {
-	time.Sleep(time.Second)
+	time.Sleep(time.Millisecond * 200)
 	return tickMsg{}
 }

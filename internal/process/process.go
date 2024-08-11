@@ -2,6 +2,7 @@ package process
 
 import (
 	"fmt"
+	"github.com/thejawker/rennen/internal/utils"
 	"io"
 	"log"
 	"os"
@@ -77,7 +78,12 @@ func (p *Process) Start() error {
 		cmd = exec.Command("sh", "-c", p.Command)
 	}
 
-	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
+	// force color
+	cmd.Env = append(os.Environ(),
+		"TERM=xterm-256color",
+		"COLORTERM=truecolor",
+		"FORCE_COLOR=true",
+	)
 
 	p.Cmd = cmd
 
@@ -111,7 +117,7 @@ func (p *Process) handleOutput(reader io.Reader) {
 			n, err := reader.Read(buffer)
 			if n > 0 {
 				p.mutex.Lock()
-				p.Output += string(buffer[:n])
+				p.Output += utils.StripTerminalReturns(string(buffer[:n]))
 				p.LastActivity = time.Now()
 				p.mutex.Unlock()
 			}

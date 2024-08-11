@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // SmartTruncate truncates the input string to the specified limit,
 // preferentially removing intermediate vowels before cutting the end.
@@ -52,4 +55,19 @@ func SmartTruncate(s string, limit int, ellipsis string) string {
 	}
 
 	return string(result) + ellipsis
+}
+
+func StripTerminalReturns(s string) string {
+	// ansi has a few escape codes that we need to remove because otherwise shiz messed up in the UI
+	// \x1b[2K - clear line
+	// \x1b[0G - move to beginning of line
+	// \x1b[1G - move to beginning of line
+
+	ansiEscape := regexp.MustCompile(`\x1b\[(2K|0G|1G)`) // Regex to remove ANSI escape codes
+	controlChars := regexp.MustCompile(`[\r\\b]`)        // Regex to remove control characters
+
+	s = ansiEscape.ReplaceAllString(s, "")
+	s = controlChars.ReplaceAllString(s, "")
+
+	return s
 }

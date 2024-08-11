@@ -5,20 +5,21 @@
 > *very* least:
 
 ## most important
-- [ ]  clear notification bell right away when viewing it
+- [x] clear notification bell right away when viewing it
 - [x] ability to restart an individual task (e.g. by pressing 'r')
 - [x] ability to gracefully exit the program (e.g. by pressing 'q')
 - [x] ability to gracefully stop one task (e.g. by pressing 'x')
 - [x] fix tab bar width overflow issue
+- [x] fix the ugly asni line clearing that messes up the content (looking at you yarn)
 
 ## meh dont really care
-- [ ] enable ansi colors from the processes
-- [ ] enable 
-- [ ] info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
+- [x] enable ansi colors from the processes 
+- [x] in process: info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
 - [ ] overview should show
   - [ ] number of tasks
   - [ ] time running
   - [ ] processes associated with tasks
+  - [ ] info line
 - [ ] disable logging by default
 - [ ] scrollable content
 - [ ] search
