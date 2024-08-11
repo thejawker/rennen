@@ -17,6 +17,7 @@ before:
 
 builds:
   - main: ./cmd/rennen/main.go
+    binary: ren
   - env:
       - CGO_ENABLED=0
     goos:
