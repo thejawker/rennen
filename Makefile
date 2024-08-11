@@ -29,7 +29,7 @@ dist-fake:
 dist:
 	@echo "Releasing the binary..."
 # export the env GITHUB_TOKEN first before realeasing
-	@goreleaser release
+	@goreleaser release --clean
 
 # Build the Go binary
 .PHONY: build
