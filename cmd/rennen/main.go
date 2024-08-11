@@ -31,9 +31,6 @@ func main() {
 			}
 			fmt.Println("okay, just generated that at", *configPath)
 			return
-		default:
-			fmt.Printf("Unknown command: %s\n", os.Args[1])
-			os.Exit(1)
 		}
 	}
 
