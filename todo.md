@@ -11,8 +11,15 @@
 - [x] ability to gracefully stop one task (e.g. by pressing 'x')
 - [x] fix tab bar width overflow issue
 - [x] fix the ugly asni line clearing that messes up the content (looking at you yarn)
+- [ ] add a predefined set of commands you can easily kick off from the overview page
+
+## onboarding --- on_boooooring_ jk jk
+- [ ] add an init command that creates a `ren.json` file
+- [ ] suggest init if no ren.json
 
 ## meh dont really care
+- [ ] load stuff from the package.json ????? not sure tho
+- [ ] add a super minimal view that kills all the borders and spacing and just shows the shiz
 - [x] enable ansi colors from the processes 
 - [x] in process: info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
 - [ ] overview should show

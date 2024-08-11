@@ -1,4 +1,21 @@
 {
+  "commands": [
+    {
+      "shortname": "test",
+      "description": "Runs your tests",
+      "command": "bash ./test_finishes.sh"
+    },
+    {
+      "shortname": "install fe",
+      "description": "Installs the frontend",
+      "command": "bash ./test_finishes.sh"
+    },
+    {
+      "shortname": "open project",
+      "description": "Opens the project in your browser",
+      "command": "open http://localhost:3000"
+    }
+  ],
   "processes": [
     {
       "shortname": "frontend",
