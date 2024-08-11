@@ -69,6 +69,11 @@ build:
 
 	@echo "\n✨  Binary located at $(fullpath)"
 
+# Unbrew will remove the brew installed version for testing
+.PHONY: unbrew
+unbrew:
+	@brew uninstall thejawker/tappen/rennen
+
 # Show server logs
 .PHONY: logs
 logs:

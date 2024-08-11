@@ -5,14 +5,19 @@ rennen (Dutch for running) runs a number of commands simultaneously and is built
 
 ## installation
 
-you can install rennen by downloading the binary from the download section.
+right now i really have only tested it on mac so dunno if it works on windows or linux
+
+### mac
+```bash
+brew install thejawker/tappen/rennen
+```
 
 ## usage
 
-once you've downloaded the binary, you can run rennen with the following command:
+once you've downloaded the binary, you can run rennen with the following command `ren`:
 
 ```bash
-./rennen
+ren
 ```
 
 ## configuration

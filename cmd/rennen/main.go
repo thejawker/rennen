@@ -9,10 +9,7 @@ import (
 	"github.com/thejawker/rennen/internal/model"
 	"github.com/thejawker/rennen/internal/process"
 	"log"
-)
-
-var (
-	version = "0.0.4"
+	"os"
 )
 
 func main() {
@@ -23,7 +20,7 @@ func main() {
 
 	// Show version and exit if requested
 	if *showVersion {
-		fmt.Printf("Rennen version %s\n", version)
+		fmt.Printf("Rennen version %s\n", getVersion())
 		return
 	}
 
@@ -60,6 +57,16 @@ func main() {
 	}
 
 	fmt.Println("\nwoah that was cool i guess, all is stopped now though")
+}
+
+func getVersion() string {
+	// get from the ./VERSION file
+	file, err := os.ReadFile("./VERSION")
+	if err != nil {
+		return "unknown"
+	}
+
+	return string(file)
 }
 
 func loadConfig(configPath string) (*config.Config, error) {
