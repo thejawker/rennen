@@ -4,6 +4,12 @@ BUILD_DIR=build
 LOG_FILE=ren.log
 MAIN_FILE=cmd/rennen/main.go
 
+# load .env file if it exists
+ifneq (,$(wildcard ./.env))
+    include .env
+    export $(shell sed 's/=.*//' .env)
+endif
+
 # Default command is start
 .PHONY: start
 start: run
@@ -13,6 +19,17 @@ start: run
 run:
 	@echo "Starting the server..."
 	@go run $(MAIN_FILE)
+
+# Dist fake
+.PHONY: dist-fake
+dist-fake:
+	@goreleaser release --snapshot --clean
+
+.PHONY: dist
+dist:
+	@echo "Releasing the binary..."
+# export the env GITHUB_TOKEN first before realeasing
+	@goreleaser release
 
 # Build the Go binary
 .PHONY: build
