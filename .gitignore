@@ -2,3 +2,4 @@ tmp
 debug.log
 ren.log
 build
+dist/
