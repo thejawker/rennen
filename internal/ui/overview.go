@@ -7,9 +7,6 @@ import (
 )
 
 func renderOverview(m types.ViewModelProvider, maxLines int) string {
-	// render startedAt
-	// show process count
-
 	processes := "Processes: " + fmt.Sprintf("%d", len(m.GetViewModel().Processes))
 	runTime := "Started: " + m.GetRunTime()
 
