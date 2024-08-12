@@ -1,9 +1,11 @@
 package types
 
 import (
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/thejawker/rennen/internal/process"
 	"sync"
+	"time"
 )
 
 type Model struct {
@@ -11,8 +13,9 @@ type Model struct {
 	Tabs       []Tab
 	ActiveTab  int
 	WindowSize tea.WindowSizeMsg
+	Viewport   *viewport.Model
 	Mutex      sync.Mutex
-	Program    *tea.Program
+	StartedAt  time.Time
 }
 
 type Tab struct {
@@ -25,4 +28,6 @@ type ViewModelProvider interface {
 	GetViewModel() Model
 	GetActiveProcess() *process.Process
 	GetActiveTabName() string
+	IsOverview() bool
+	GetRunTime() string
 }

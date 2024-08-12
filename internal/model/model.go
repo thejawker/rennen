@@ -19,6 +19,7 @@ type Model struct {
 	WindowSize tea.WindowSizeMsg
 	Viewport   *viewport.Model
 	Mutex      sync.Mutex
+	StartedAt  time.Time
 }
 
 func New(processes []*process.Process) *Model {
@@ -33,6 +34,7 @@ func New(processes []*process.Process) *Model {
 		Processes: processes,
 		Tabs:      tabs,
 		ActiveTab: 0,
+		StartedAt: time.Now(),
 	}
 }
 
@@ -226,10 +228,18 @@ func (m *Model) GetActiveTabName() string {
 	return m.Tabs[m.ActiveTab].Name
 }
 
+func (m *Model) IsOverview() bool {
+	return m.ActiveTab == 0
+}
+
+func (m *Model) GetRunTime() string {
+	return time.Since(m.StartedAt).Round(time.Second).String()
+}
+
 func (m *Model) startAllProcesses() []tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.Processes))
 	for i, p := range m.Processes {
-		i, p := i, p // https://golang.org/doc/faq#closures_and_goroutines
+		i, p := i, p
 		cmds[i] = m.startProcess(p)
 	}
 	return cmds
