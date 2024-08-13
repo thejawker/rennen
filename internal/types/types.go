@@ -33,4 +33,5 @@ type ViewModelProvider interface {
 	IsOverview() bool
 	GetRunTime() string
 	GetCommandByName(name string) *process.Process
+	GetActiveCommands() []*process.Process
 }

@@ -15,7 +15,6 @@ func renderOverview(m types.ViewModelProvider, maxLines int) string {
 	commandLines := strings.Split(commandList, "\n")
 	processTable := renderProcessTable(m, maxLines-len(commandLines)-2, windowWidth)
 
-	// return symbol to run command (Return: )
 	hint := hintStyle.Width(windowWidth).Render("←/→ tabs, ↑/↓ select, ↵ trigger command, (q)uit all")
 
 	return fmt.Sprintf("%s\n\n%s\n%s", commandList, processTable, hint)
@@ -80,7 +79,11 @@ func renderProcessTable(m types.ViewModelProvider, height, width int) string {
 		SetColumnWidth("status", 10).
 		SetTotalWidth(width - 2)
 
-	for _, proc := range m.GetViewModel().Processes {
+	commands := m.GetActiveCommands()
+	processes := m.GetViewModel().Processes
+	combined := append(commands, processes...)
+
+	for _, proc := range combined {
 		status := ""
 
 		if proc.StartedAt != nil {
@@ -95,6 +98,6 @@ func renderProcessTable(m types.ViewModelProvider, height, width int) string {
 	}
 
 	return lipgloss.NewStyle().
-		Height(height).
+		MaxHeight(height).
 		Render(table.Render())
 }

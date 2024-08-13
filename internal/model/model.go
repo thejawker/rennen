@@ -182,7 +182,18 @@ func (m *Model) GetProcessForTab(tab types.Tab) *process.Process {
 		}
 	}
 	return nil
+}
 
+func (m *Model) GetActiveCommands() []*process.Process {
+	// whenever it is not stopped and has been active within last 10 seconds
+	var activeCommands []*process.Process
+	for _, cmd := range m.Commands {
+		if cmd.LastActivity.Add(10 * time.Second).After(time.Now()) {
+			activeCommands = append(activeCommands, cmd)
+		}
+	}
+
+	return activeCommands
 }
 
 // updateNotifications checks the last activity time of each process and sets
