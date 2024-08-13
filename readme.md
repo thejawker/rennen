@@ -1,7 +1,7 @@
 
 # run ren rennen 🏃
 
-rennen (Dutch for running) runs a number of commands simultaneously and is built with the [bubbletea](https://github.com/charmbracelet/bubbletea) framework. it's designed to be simple, clean, and easy to use.
+rennen (Dutch for running) runs a predefined set of commands simultaneously and has the option to trigger individual commands. it's designed to be simple, clean, and easy to use.
 
 <img alt="Welcome to VHS" src="https://github.com/thejawker/rennen/blob/main/ren.gif" width="800" />
 
@@ -88,6 +88,9 @@ make logs
 
 ## roadmap
 read these things that i should do but probably won't [here](todo.md)
+
+## creds
+it's built with the [bubbletea](https://github.com/charmbracelet/bubbletea) framework, and is released using goreleaser.
 
 ## contributing
 well, you really don't have to

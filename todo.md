@@ -22,13 +22,11 @@
 - [ ] add a super minimal view that kills all the borders and spacing and just shows the shiz
 - [x] enable ansi colors from the processes 
 - [x] in process: info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
-- [ ] overview should show
-  - [ ] number of tasks
-  - [ ] time running
-  - [ ] processes associated with tasks
-  - [ ] info line
+- [x] overview should show
+  - [x] a selector to trigger shortcuts/commands eg like open browser db etc
+  - [x] table of all running processes and commands and their last output
+  - [x] a hint line
 - [x] disable logging by default
 - [ ] scrollable content
 - [ ] search
-- [ ] add the ability to add one offs to the overview, to like open browser db etc
 - [x] ability to clear the screen (e.g. by pressing 'c')
