@@ -32,4 +32,5 @@ type ViewModelProvider interface {
 	GetActiveTabName() string
 	IsOverview() bool
 	GetRunTime() string
+	GetCommandByName(name string) *process.Process
 }

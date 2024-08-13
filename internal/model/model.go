@@ -62,8 +62,16 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.ClearNotification(m.ActiveTab)
 		case "up":
 			m.SelectedCommand = (m.SelectedCommand - 1 + len(m.Commands)) % len(m.Commands)
+			log.Printf("Selected command: %d\n", m.SelectedCommand)
+			return m, nil
 		case "down":
 			m.SelectedCommand = (m.SelectedCommand + 1) % len(m.Commands)
+			log.Printf("Selected command: %d\n", m.SelectedCommand)
+			return m, nil
+		case "enter":
+			if m.SelectedCommand >= 0 && m.SelectedCommand < len(m.Commands) {
+				return m, m.startProcess(m.Commands[m.SelectedCommand])
+			}
 		case "x":
 			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
 				return m, m.closeProcess(m.GetActiveProcess())
@@ -215,10 +223,13 @@ func (m *Model) View() string {
 
 func (m *Model) GetViewModel() types.Model {
 	return types.Model{
-		Processes:  m.Processes,
-		Tabs:       m.Tabs,
-		ActiveTab:  m.ActiveTab,
-		WindowSize: m.WindowSize,
+		Processes:       m.Processes,
+		Tabs:            m.Tabs,
+		ActiveTab:       m.ActiveTab,
+		WindowSize:      m.WindowSize,
+		StartedAt:       m.StartedAt,
+		Commands:        m.Commands,
+		SelectedCommand: m.SelectedCommand,
 	}
 }
 
@@ -264,6 +275,15 @@ func (m *Model) GetTabForProcess(proc *process.Process) *types.Tab {
 	for i, t := range m.Tabs {
 		if t.Name == proc.Shortname {
 			return &m.Tabs[i]
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetCommandByName(name string) *process.Process {
+	for _, c := range m.Commands {
+		if c.Shortname == name {
+			return c
 		}
 	}
 	return nil

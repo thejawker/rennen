@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"log"
 )
 import "github.com/charmbracelet/lipgloss/table"
 
@@ -92,7 +91,6 @@ func (t *Table) Render() string {
 func (t *Table) getColumnWidth(column string) int {
 	// if the width is set, return it
 	if width, ok := t.ColumnWidths[column]; ok {
-		log.Printf("width: %d", width)
 		return width
 	}
 

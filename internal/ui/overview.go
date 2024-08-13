@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/thejawker/rennen/internal/types"
 	"github.com/thejawker/rennen/internal/utils"
+	"time"
 )
 
 func renderOverview(m types.ViewModelProvider, maxLines int) string {
@@ -27,16 +28,22 @@ func renderOverview(m types.ViewModelProvider, maxLines int) string {
 }
 
 func renderCommandList(m types.ViewModelProvider, width int) interface{} {
-	list := ""
+	list := "Shortcuts:\n"
 	for i, cmd := range m.GetViewModel().Commands {
 		// use a space to separate the command from the description
 		// to show selected you do > before the command
 		prefix := " "
 		if i == m.GetViewModel().SelectedCommand {
-			prefix = ">"
+			prefix = "›"
 		}
 
-		list += fmt.Sprintf("%s %s\n", prefix, cmd.Shortname)
+		status := "•"
+		// we check whether the command is running or not and if it has been active within last 10 seconds
+		if cmd.LastActivity.Add(3 * time.Second).After(time.Now()) {
+			status = "✓"
+		}
+
+		list += fmt.Sprintf(" %s %s %s\n", prefix, status, cmd.Shortname)
 	}
 
 	return list

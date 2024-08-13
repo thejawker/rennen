@@ -70,6 +70,7 @@ func (p *Process) Start() error {
 	p.done = make(chan struct{})
 	now := time.Now()
 	p.StartedAt = &now
+	p.LastActivity = now
 
 	var cmd *exec.Cmd
 
