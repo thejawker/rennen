@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/charmbracelet/bubbles/viewport"
+	"github.com/thejawker/rennen/internal/utils"
 	"log"
 	"sync"
 	"time"
@@ -13,15 +14,18 @@ import (
 )
 
 type Model struct {
-	Processes  []*process.Process
-	Tabs       []types.Tab
-	ActiveTab  int
-	WindowSize tea.WindowSizeMsg
-	Viewport   *viewport.Model
-	Mutex      sync.Mutex
+	Commands        []*process.Process
+	Processes       []*process.Process
+	Tabs            []types.Tab
+	ActiveTab       int
+	WindowSize      tea.WindowSizeMsg
+	Viewport        *viewport.Model
+	Mutex           sync.Mutex
+	StartedAt       time.Time
+	SelectedCommand int
 }
 
-func New(processes []*process.Process) *Model {
+func New(processes, commands []*process.Process) *Model {
 	tabs := make([]types.Tab, len(processes)+1)
 	tabs[0] = types.Tab{Name: "overview", Notification: false}
 	for i, p := range processes {
@@ -30,9 +34,12 @@ func New(processes []*process.Process) *Model {
 
 	// attach
 	return &Model{
-		Processes: processes,
-		Tabs:      tabs,
-		ActiveTab: 0,
+		Processes:       processes,
+		Commands:        commands,
+		SelectedCommand: 0,
+		Tabs:            tabs,
+		ActiveTab:       0,
+		StartedAt:       time.Now(),
 	}
 }
 
@@ -54,9 +61,26 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActiveTab = (m.ActiveTab - 1 + len(m.Tabs)) % len(m.Tabs)
 			return m.ClearNotification(m.ActiveTab)
 		case "up":
-			m.ScrollOutput(-1)
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
+			m.SelectedCommand = (m.SelectedCommand - 1 + len(m.Commands)) % len(m.Commands)
+			log.Printf("Selected command: %d\n", m.SelectedCommand)
+			return m, nil
 		case "down":
-			m.ScrollOutput(1)
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
+			m.SelectedCommand = (m.SelectedCommand + 1) % len(m.Commands)
+			log.Printf("Selected command: %d\n", m.SelectedCommand)
+			return m, nil
+		case "enter":
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
+			if m.SelectedCommand >= 0 && m.SelectedCommand < len(m.Commands) {
+				return m, m.startProcess(m.Commands[m.SelectedCommand])
+			}
 		case "x":
 			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
 				return m, m.closeProcess(m.GetActiveProcess())
@@ -167,7 +191,18 @@ func (m *Model) GetProcessForTab(tab types.Tab) *process.Process {
 		}
 	}
 	return nil
+}
 
+func (m *Model) GetActiveCommands() []*process.Process {
+	// whenever it is not stopped and has been active within last 10 seconds
+	var activeCommands []*process.Process
+	for _, cmd := range m.Commands {
+		if cmd.LastActivity.Add(10 * time.Second).After(time.Now()) {
+			activeCommands = append(activeCommands, cmd)
+		}
+	}
+
+	return activeCommands
 }
 
 // updateNotifications checks the last activity time of each process and sets
@@ -208,10 +243,13 @@ func (m *Model) View() string {
 
 func (m *Model) GetViewModel() types.Model {
 	return types.Model{
-		Processes:  m.Processes,
-		Tabs:       m.Tabs,
-		ActiveTab:  m.ActiveTab,
-		WindowSize: m.WindowSize,
+		Processes:       m.Processes,
+		Tabs:            m.Tabs,
+		ActiveTab:       m.ActiveTab,
+		WindowSize:      m.WindowSize,
+		StartedAt:       m.StartedAt,
+		Commands:        m.Commands,
+		SelectedCommand: m.SelectedCommand,
 	}
 }
 
@@ -226,10 +264,18 @@ func (m *Model) GetActiveTabName() string {
 	return m.Tabs[m.ActiveTab].Name
 }
 
+func (m *Model) IsOverview() bool {
+	return m.ActiveTab == 0
+}
+
+func (m *Model) GetRunTime() string {
+	return utils.RelativeTime(m.StartedAt)
+}
+
 func (m *Model) startAllProcesses() []tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.Processes))
 	for i, p := range m.Processes {
-		i, p := i, p // https://golang.org/doc/faq#closures_and_goroutines
+		i, p := i, p
 		cmds[i] = m.startProcess(p)
 	}
 	return cmds
@@ -249,6 +295,15 @@ func (m *Model) GetTabForProcess(proc *process.Process) *types.Tab {
 	for i, t := range m.Tabs {
 		if t.Name == proc.Shortname {
 			return &m.Tabs[i]
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetCommandByName(name string) *process.Process {
+	for _, c := range m.Commands {
+		if c.Shortname == name {
+			return c
 		}
 	}
 	return nil

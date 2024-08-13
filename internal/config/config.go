@@ -9,6 +9,7 @@ import (
 // Config represents the structure of our configuration file
 type Config struct {
 	Processes []ProcessConfig `json:"processes"`
+	Commands  []ProcessConfig `json:"commands"`
 }
 
 // ProcessConfig represents the configuration for a single process

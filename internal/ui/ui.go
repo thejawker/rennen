@@ -14,10 +14,15 @@ var (
 	inactiveTabBorder = tabBorderWithBottom("┴", "─", "┴")
 	activeTabBorder   = tabBorderWithBottom("┘", " ", "└")
 	docStyle          = lipgloss.NewStyle().Padding(0, 0, 0, 0)
-	highlightColor    = lipgloss.AdaptiveColor{Light: "#3f3f46", Dark: "#475569"}
+	highlightColor    = lipgloss.AdaptiveColor{Light: "#656575", Dark: "#475569"}
 	inactiveTabStyle  = lipgloss.NewStyle().Border(inactiveTabBorder, true).BorderForeground(highlightColor).Padding(0, 1)
 	activeTabStyle    = inactiveTabStyle.Border(activeTabBorder, true)
 	windowStyle       = lipgloss.NewStyle().BorderForeground(highlightColor).Padding(0, 1, 0, 1).Align(lipgloss.Top, lipgloss.Left).Border(lipgloss.RoundedBorder()).UnsetBorderTop()
+
+	hintStyle = lipgloss.
+			NewStyle().
+			Foreground(lipgloss.AdaptiveColor{Light: "#a7a7a7", Dark: "#8a8a8a"}).
+			Align(lipgloss.Bottom, lipgloss.Right)
 )
 
 func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
@@ -121,6 +126,10 @@ func renderTabs(vm types.Model) string {
 }
 
 func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
+	if m.IsOverview() {
+		return renderOverview(m, maxLines), false
+	}
+
 	process := m.GetActiveProcess()
 	if process == nil {
 		return fmt.Sprintf("Viewing tab: %s", m.GetActiveTabName()), true
@@ -144,12 +153,6 @@ func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
 	outputStyle := lipgloss.
 		NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#606060", Dark: "#e0e0e0"})
-	hintStyle := lipgloss.
-		NewStyle().
-		Width(windowWidth).
-		// pretty muted
-		Foreground(lipgloss.AdaptiveColor{Light: "#a7a7a7", Dark: "#8a8a8a"}).
-		Align(lipgloss.Bottom, lipgloss.Right)
 
 	// Construct the window content with command, description, and output
 	header := commandStyle.Render(fmt.Sprintf("$ %s", process.Command)) + "\n"
@@ -173,7 +176,7 @@ func renderContent(m types.ViewModelProvider, maxLines int) (string, bool) {
 	vp.GotoBottom()
 
 	// Render hint, left right tab,
-	hint := hintStyle.Render("←/→ tabs, (q)uit all, (c)lear, (x) close, (r)eload")
+	hint := hintStyle.Width(windowWidth).Render("←/→ tabs, (q)uit all, (c)lear, (x) close, (r)eload")
 
 	// Combine all elements
 	content := fmt.Sprintf("%s\n%s\n%s\n%s", header, divider, vp.View(), hint)

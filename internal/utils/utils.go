@@ -3,6 +3,7 @@ package utils
 import (
 	"regexp"
 	"strings"
+	"time"
 )
 
 // SmartTruncate truncates the input string to the specified limit,
@@ -70,4 +71,11 @@ func StripTerminalReturns(s string) string {
 	s = controlChars.ReplaceAllString(s, "")
 
 	return s
+}
+
+func RelativeTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return time.Since(t).Round(time.Second).String()
 }

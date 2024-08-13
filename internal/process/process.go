@@ -24,6 +24,7 @@ type Process struct {
 	Output       string
 	Cmd          *exec.Cmd
 	LastActivity time.Time
+	StartedAt    *time.Time
 	mutex        sync.Mutex
 	done         chan struct{}
 	stopped      bool
@@ -67,6 +68,9 @@ func (p *Process) Start() error {
 	}
 
 	p.done = make(chan struct{})
+	now := time.Now()
+	p.StartedAt = &now
+	p.LastActivity = now
 
 	var cmd *exec.Cmd
 
@@ -151,6 +155,8 @@ func (p *Process) Stop() error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
+	p.StartedAt = nil
+
 	if p.stopped {
 		return nil
 	}
@@ -198,4 +204,23 @@ func (p *Process) ClearOutput() {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	p.Output = ""
+}
+
+func (p *Process) IsStopped() bool {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	return p.stopped
+}
+
+func (p *Process) GetLastNonEmptyLine() string {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	lines := strings.Split(p.Output, "\n")
+	for i := len(lines) - 1; i >= 0; i-- {
+		if len(lines[i]) > 0 {
+			return lines[i]
+		}
+	}
+
+	return ""
 }

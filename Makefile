@@ -18,7 +18,7 @@ start: run
 .PHONY: run
 run:
 	@echo "Starting the server..."
-	@go run $(MAIN_FILE)
+	@go run $(MAIN_FILE) -logging=all
 
 # Dist fake
 .PHONY: dist-fake

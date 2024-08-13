@@ -64,8 +64,14 @@ func main() {
 		log.Fatalf("Error initializing processes: %v", err)
 	}
 
+	// Initialize commands
+	commands, err := process.InitializeFromConfig(cfg.Commands)
+	if err != nil {
+		log.Fatalf("Error initializing commands: %v", err)
+	}
+
 	// Create and initialize the model
-	m := model.New(processes)
+	m := model.New(processes, commands)
 
 	// Create and start the Bubble Tea program
 	p := tea.NewProgram(m, tea.WithAltScreen())
