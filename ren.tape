@@ -8,11 +8,11 @@ Set FontSize 20
 Set Width 1200
 Set Height 600
 
-Type "ren"
+Type@700ms "ren"
 Sleep 500ms
 Enter
 
-Sleep 1200ms
+Sleep 3000ms
 Right
 
 Sleep 700ms
