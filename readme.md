@@ -1,13 +1,12 @@
+# run ren rennen 🏃🏃‍♀️‍➡️
 
-# run ren rennen 🏃
-
-rennen (Dutch for running) runs a predefined set of commands simultaneously and has the option to trigger individual commands. it's designed to be simple, clean, and easy to use.
+ren (Dutch for run) runs a predefined set of commands simultaneously and has the option to trigger individual commands. it's designed to relief you from having to remember a zillion commands to type in before you can get to work.
 
 <img alt="Welcome to VHS" src="https://github.com/thejawker/rennen/blob/main/ren.gif" width="800" />
 
 ## installation
 
-right now i really have only tested it on mac so dunno if it works on windows or linux
+there's only mac support for the moment, linux and windows _m i g h t_ come in the future. kinda depends you know...
 
 ### mac
 ```bash
@@ -16,20 +15,27 @@ brew install thejawker/tappen/rennen
 
 ## usage
 
-once you've downloaded the binary, you can run rennen with the following command `ren`:
+once you've downloaded the binary, you can run `ren` with the following command:
 
 ```bash
 ren init # to create a ren.json file
-ren # to start rennen
+ren # to start it
 ```
 
 ## configuration
-rennen requires a configuration file named `ren.json` in the same directory where the binary is run. this file should contain a `processes` array where each object represents a process that rennen should manage. each process object should have a `shortname`, `command`, and `description`.
+`ren` requires a configuration file named `ren.json` in the same directory where the binary is run. this file should contain a `processes` array where each object represents a process that rennen should manage. each process object should have a `shortname`, `command`, and `description`.
 
 here's an example of what the `ren.json` file could look like:
 
 ```json
 {
+  "commands": [
+    {
+      "shortname": "open mailhog",
+      "command": "open http://localhost:8025/",
+      "description": "opens the mailhog page"
+    }
+  ],
   "processes": [
     {
       "shortname": "frontend",
@@ -41,7 +47,6 @@ here's an example of what the `ren.json` file could look like:
       "command": "php artisan serve",
       "description": "starts the laravel server"
     }
-    //... add so many more processes
   ]
 }
 ```
