@@ -3,6 +3,8 @@
 
 rennen (Dutch for running) runs a number of commands simultaneously and is built with the [bubbletea](https://github.com/charmbracelet/bubbletea) framework. it's designed to be simple, clean, and easy to use.
 
+<img alt="Welcome to VHS" src="https://github.com/thejawker/rennen/blob/main/ren.gif" width="600" />
+
 ## installation
 
 right now i really have only tested it on mac so dunno if it works on windows or linux
