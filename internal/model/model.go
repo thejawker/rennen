@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/charmbracelet/bubbles/viewport"
+	"github.com/thejawker/rennen/internal/utils"
 	"log"
 	"sync"
 	"time"
@@ -13,6 +14,7 @@ import (
 )
 
 type Model struct {
+	Commands   []*process.Process
 	Processes  []*process.Process
 	Tabs       []types.Tab
 	ActiveTab  int
@@ -233,7 +235,7 @@ func (m *Model) IsOverview() bool {
 }
 
 func (m *Model) GetRunTime() string {
-	return time.Since(m.StartedAt).Round(time.Second).String()
+	return utils.RelativeTime(m.StartedAt)
 }
 
 func (m *Model) startAllProcesses() []tea.Cmd {
