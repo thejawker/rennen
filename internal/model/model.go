@@ -61,14 +61,23 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActiveTab = (m.ActiveTab - 1 + len(m.Tabs)) % len(m.Tabs)
 			return m.ClearNotification(m.ActiveTab)
 		case "up":
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
 			m.SelectedCommand = (m.SelectedCommand - 1 + len(m.Commands)) % len(m.Commands)
 			log.Printf("Selected command: %d\n", m.SelectedCommand)
 			return m, nil
 		case "down":
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
 			m.SelectedCommand = (m.SelectedCommand + 1) % len(m.Commands)
 			log.Printf("Selected command: %d\n", m.SelectedCommand)
 			return m, nil
 		case "enter":
+			if m.ActiveTab != 0 {
+				return m, nil
+			}
 			if m.SelectedCommand >= 0 && m.SelectedCommand < len(m.Commands) {
 				return m, m.startProcess(m.Commands[m.SelectedCommand])
 			}

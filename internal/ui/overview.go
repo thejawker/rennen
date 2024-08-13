@@ -83,7 +83,7 @@ func renderProcessTable(m types.ViewModelProvider, height, width int) string {
 	processes := m.GetViewModel().Processes
 	combined := append(commands, processes...)
 
-	for _, proc := range combined {
+	for idx, proc := range combined {
 		status := ""
 
 		if proc.StartedAt != nil {
@@ -91,7 +91,11 @@ func renderProcessTable(m types.ViewModelProvider, height, width int) string {
 		}
 
 		if proc.IsStopped() {
-			status = "Stopped"
+			status = "stopped"
+		}
+
+		if len(commands) > idx {
+			status = "triggered"
 		}
 
 		table.AddRow([]string{proc.Shortname, proc.GetLastNonEmptyLine(), status})
@@ -99,5 +103,6 @@ func renderProcessTable(m types.ViewModelProvider, height, width int) string {
 
 	return lipgloss.NewStyle().
 		MaxHeight(height).
+		Height(height).
 		Render(table.Render())
 }
