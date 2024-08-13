@@ -14,17 +14,18 @@ import (
 )
 
 type Model struct {
-	Commands   []*process.Process
-	Processes  []*process.Process
-	Tabs       []types.Tab
-	ActiveTab  int
-	WindowSize tea.WindowSizeMsg
-	Viewport   *viewport.Model
-	Mutex      sync.Mutex
-	StartedAt  time.Time
+	Commands        []*process.Process
+	Processes       []*process.Process
+	Tabs            []types.Tab
+	ActiveTab       int
+	WindowSize      tea.WindowSizeMsg
+	Viewport        *viewport.Model
+	Mutex           sync.Mutex
+	StartedAt       time.Time
+	SelectedCommand int
 }
 
-func New(processes []*process.Process) *Model {
+func New(processes, commands []*process.Process) *Model {
 	tabs := make([]types.Tab, len(processes)+1)
 	tabs[0] = types.Tab{Name: "overview", Notification: false}
 	for i, p := range processes {
@@ -33,10 +34,12 @@ func New(processes []*process.Process) *Model {
 
 	// attach
 	return &Model{
-		Processes: processes,
-		Tabs:      tabs,
-		ActiveTab: 0,
-		StartedAt: time.Now(),
+		Processes:       processes,
+		Commands:        commands,
+		SelectedCommand: 0,
+		Tabs:            tabs,
+		ActiveTab:       0,
+		StartedAt:       time.Now(),
 	}
 }
 
@@ -58,9 +61,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActiveTab = (m.ActiveTab - 1 + len(m.Tabs)) % len(m.Tabs)
 			return m.ClearNotification(m.ActiveTab)
 		case "up":
-			m.ScrollOutput(-1)
+			m.SelectedCommand = (m.SelectedCommand - 1 + len(m.Commands)) % len(m.Commands)
 		case "down":
-			m.ScrollOutput(1)
+			m.SelectedCommand = (m.SelectedCommand + 1) % len(m.Commands)
 		case "x":
 			if m.ActiveTab > 0 && m.ActiveTab <= len(m.Processes) {
 				return m, m.closeProcess(m.GetActiveProcess())

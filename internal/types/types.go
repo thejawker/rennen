@@ -9,13 +9,15 @@ import (
 )
 
 type Model struct {
-	Processes  []*process.Process
-	Tabs       []Tab
-	ActiveTab  int
-	WindowSize tea.WindowSizeMsg
-	Viewport   *viewport.Model
-	Mutex      sync.Mutex
-	StartedAt  time.Time
+	Processes       []*process.Process
+	Commands        []*process.Process
+	Tabs            []Tab
+	ActiveTab       int
+	WindowSize      tea.WindowSizeMsg
+	Viewport        *viewport.Model
+	Mutex           sync.Mutex
+	StartedAt       time.Time
+	SelectedCommand int
 }
 
 type Tab struct {

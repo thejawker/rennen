@@ -18,11 +18,28 @@ func renderOverview(m types.ViewModelProvider, maxLines int) string {
 	//
 	//content := lipgloss.NewStyle().Height(maxLines - 1).Render(count)
 	windowWidth := m.GetViewModel().WindowSize.Width - windowStyle.GetHorizontalFrameSize() - 2
-	content := renderProcessTable(m, maxLines-1, windowWidth)
+	commandList := renderCommandList(m, windowWidth)
+	processTable := renderProcessTable(m, maxLines-1, windowWidth)
 
 	hint := hintStyle.Width(windowWidth).Render("←/→ tabs, (q)uit all")
 
-	return fmt.Sprintf("%s\n%s", content, hint)
+	return fmt.Sprintf("%s\n%s\n%s", commandList, processTable, hint)
+}
+
+func renderCommandList(m types.ViewModelProvider, width int) interface{} {
+	list := ""
+	for i, cmd := range m.GetViewModel().Commands {
+		// use a space to separate the command from the description
+		// to show selected you do > before the command
+		prefix := " "
+		if i == m.GetViewModel().SelectedCommand {
+			prefix = ">"
+		}
+
+		list += fmt.Sprintf("%s %s\n", prefix, cmd.Shortname)
+	}
+
+	return list
 }
 
 func renderProcessTable(m types.ViewModelProvider, height, width int) string {
