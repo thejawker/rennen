@@ -1,5 +1,5 @@
 
-# rennen 🏃
+# run ren rennen 🏃
 
 rennen (Dutch for running) runs a number of commands simultaneously and is built with the [bubbletea](https://github.com/charmbracelet/bubbletea) framework. it's designed to be simple, clean, and easy to use.
 
