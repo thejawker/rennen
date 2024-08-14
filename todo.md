@@ -18,7 +18,8 @@
 - [x] suggest init if no ren.json
 
 ## meh dont really care
-- [ ] load stuff from the package.json ????? not sure tho
+- [ ] improve the way it looks; at least the overview page since it's confusing af
+- [ ] load stuff from the package.json, composer.json etc ????? not sure tho
 - [ ] add a super minimal view that kills all the borders and spacing and just shows the shiz
 - [x] enable ansi colors from the processes 
 - [x] in process: info line at the bottom right of the screen (e.g. "Press 'q' to quit" or "Press 'r' to restart")
