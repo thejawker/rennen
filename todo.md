@@ -5,13 +5,14 @@
 > *very* least:
 
 ## most important
+- [ ] dang it, it just totally messes up the text wrapping, i'm crying in a corner okay?
 - [x] clear notification bell right away when viewing it
 - [x] ability to restart an individual task (e.g. by pressing 'r')
 - [x] ability to gracefully exit the program (e.g. by pressing 'q')
 - [x] ability to gracefully stop one task (e.g. by pressing 'x')
 - [x] fix tab bar width overflow issue
 - [x] fix the ugly asni line clearing that messes up the content (looking at you yarn)
-- [ ] add a predefined set of commands you can easily kick off from the overview page
+- [x] add a predefined set of commands you can easily kick off from the overview page
 
 ## onboarding --- on_boooooring_ jk jk
 - [x] add an init command that creates a `ren.json` file
